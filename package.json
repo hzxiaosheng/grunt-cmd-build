@@ -1,7 +1,7 @@
 {
   "name": "grunt-cmd-build",
   "description": "a high performance build tool for cmd(seajs) wrappered javascript codes",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "homepage": "https://github.com/hzxiaosheng/grunt-cmd-build",
   "author": {
     "name": "hzxiaosheng",
