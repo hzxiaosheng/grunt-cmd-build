@@ -35,14 +35,30 @@ module.exports = function(grunt) {
         if(base){
             base = path.resolve(base).replace(/\\+/g,"/");
             options.seajs.base = base;
+            id_util.base(base);
+            grunt.log.writeln('use base:' + base);
         }
-        console.log("base: " + base)
+        var target = this.target;
+        var type = options.type || "combine";
         // Iterate over all specified file groups.
         this.files.forEach(function(fileInfo) {
             var src = fileInfo.src[0];
             var dest = fileInfo.dest;
-
-            var combinedCode  = cmd_util.doAstBuild(src, options);
+            var generatedCode;
+            if(type.indexOf("removeSea") == 0){
+                var srcCode = grunt.file.read(src, "UTF8");
+                if(type === "removeSea4cmd"){
+                    generatedCode = cmd_util.removeSea4cmd(srcCode, options);
+                }else{//removeSea4amd
+                    generatedCode = cmd_util.removeSea4amd(srcCode, options);
+                }
+                
+            }else{
+                if(["combine","combo","combine_only"].indexOf(type) !== -1){
+                     options.beautify = true;
+                }
+                generatedCode = cmd_util.doAstBuild(src, options);
+            }
 
             if(!fs.existsSync(dest) && dest.slice(-3) !== ".js"){
                 fs.mkdirSync(dest, "0666");
@@ -53,7 +69,7 @@ module.exports = function(grunt) {
             if (options.ext) {
                 dest = dest.replace(/\.js$/, options.ext)
             }
-            grunt.file.write(dest, combinedCode);
+            grunt.file.write(dest, generatedCode);
 
             // Print a success message.
             grunt.log.writeln('File "' + dest + '" created.');
